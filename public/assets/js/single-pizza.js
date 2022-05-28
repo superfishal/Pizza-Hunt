@@ -8,6 +8,7 @@ const $commentSection = document.querySelector("#comment-section");
 const $newCommentForm = document.querySelector("#new-comment-form");
 
 let pizzaId;
+
 function getPizza() {
   // get id of pizza
   const searchParams = new URLSearchParams(
@@ -18,8 +19,9 @@ function getPizza() {
   // get pizzaInfo
   fetch(`/api/pizzas/${pizzaId}`)
     .then((response) => {
-      // check for a 4xx or 5xx error from server
+      console.log(response);
       if (!response.ok) {
+        console.log("hi");
         throw new Error({ message: "Something went wrong!" });
       }
 
@@ -32,6 +34,7 @@ function getPizza() {
       window.history.back();
     });
 }
+
 function printPizza(pizzaData) {
   console.log(pizzaData);
 
@@ -113,26 +116,20 @@ function printReply(reply) {
 `;
 }
 
-function handleNewReplySubmit(event) {
+function handleNewCommentSubmit(event) {
   event.preventDefault();
 
-  if (!event.target.matches(".reply-form")) {
+  const commentBody = $newCommentForm.querySelector("#comment").value;
+  const writtenBy = $newCommentForm.querySelector("#written-by").value;
+
+  if (!commentBody || !writtenBy) {
     return false;
   }
 
-  const commentId = event.target.getAttribute("data-commentid");
+  const formData = { commentBody, writtenBy };
 
-  const writtenBy = event.target.querySelector("[name=reply-name]").value;
-  const replyBody = event.target.querySelector("[name=reply]").value;
-
-  if (!replyBody || !writtenBy) {
-    return false;
-  }
-
-  const formData = { writtenBy, replyBody };
-
-  fetch(`/api/comments/${pizzaId}/${commentId}`, {
-    method: "PUT",
+  fetch(`/api/comments/${pizzaId}`, {
+    method: "POST",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -147,16 +144,12 @@ function handleNewReplySubmit(event) {
     })
     .then((commentResponse) => {
       console.log(commentResponse);
-      location.reload();
+      // location.reload();
     })
     .catch((err) => {
       console.log(err);
     });
 }
-
-$backBtn.addEventListener("click", function () {
-  window.history.back();
-});
 
 function handleNewReplySubmit(event) {
   event.preventDefault();
@@ -175,6 +168,7 @@ function handleNewReplySubmit(event) {
   }
 
   const formData = { writtenBy, replyBody };
+
   fetch(`/api/comments/${pizzaId}/${commentId}`, {
     method: "PUT",
     headers: {
@@ -204,4 +198,5 @@ $backBtn.addEventListener("click", function () {
 
 $newCommentForm.addEventListener("submit", handleNewCommentSubmit);
 $commentSection.addEventListener("submit", handleNewReplySubmit);
+
 getPizza();
