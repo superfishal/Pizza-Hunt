@@ -127,7 +127,7 @@ function handleNewCommentSubmit(event) {
   }
 
   const formData = { commentBody, writtenBy };
-
+  console.log("pizzaId ", pizzaId);
   fetch(`/api/comments/${pizzaId}`, {
     method: "POST",
     headers: {
@@ -144,7 +144,7 @@ function handleNewCommentSubmit(event) {
     })
     .then((commentResponse) => {
       console.log(commentResponse);
-      // location.reload();
+      location.reload();
     })
     .catch((err) => {
       console.log(err);
